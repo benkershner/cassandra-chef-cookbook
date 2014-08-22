@@ -111,7 +111,8 @@ when "debian"
     
         get_dse_deps "${dse_package}" "${dse_version}" | sort | uniq | sed "s/$/=${dse_version}/" | xargs apt-get install -y
       EOF
-      not_if { system("dpkg -s #{node.cassandra.package_name} | grep '^Version: #{node.cassandra.version}" }
+      not_if ("dpkg -s #{node.cassandra.package_name} | grep '^Version: #{node.cassandra.version}'")
+
     end
   else
     package "#{node.cassandra.package_name}" do
