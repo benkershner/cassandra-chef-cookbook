@@ -97,7 +97,7 @@ when "debian"
       version node.cassandra.version
       not_if { node[:cassandra][:package_name] == 'dse' }
     end
-    execute "failed-dse-install" do
+    bash "dse-package-install" do
       command <<-EOF
         dse_package=#{node[:cassandra][:package_name]}
         dse_version=#{node[:cassandra][:version]}
