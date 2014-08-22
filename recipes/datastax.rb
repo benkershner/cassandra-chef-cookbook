@@ -86,19 +86,19 @@ when "debian"
     package "python-cql" do
       action :install
     end
+  end
 
-    # This is necessary because apt gets very confused by the fact that the
-    # latest package available for cassandra is 2.x while you're trying to
-    # install dsc12 which requests 1.2.x.
-    if node[:platform_family] == "debian" then
-      package "cassandra" do
-        action :install
-        version node.cassandra.version
-      end
-      apt_preference "cassandra" do
-        pin "version #{node.cassandra.version}"
-        pin_priority "700"
-      end
+  # This is necessary because apt gets very confused by the fact that the
+  # latest package available for cassandra is 2.x while you're trying to
+  # install dsc12 which requests 1.2.x.
+  if node[:platform_family] == "debian" then
+    package "#{node.cassandra.package_name}" do
+      action :install
+      version node.cassandra.version
+    end
+    apt_preference "#{node.cassandra.package_name}" do
+      pin "version #{node.cassandra.version}"
+      pin_priority "700"
     end
   end
 
