@@ -95,6 +95,26 @@ when "debian"
     package "#{node.cassandra.package_name}" do
       action :install
       version node.cassandra.version
+      not_if { node[:cassandra][:package_name] == 'dse' }
+    end
+    execute "failed-dse-install" do
+      command <<-EOF
+        dse_package=#{node[:cassandra][:package_name]}
+        dse_version=#{node[:cassandra][:version]}
+    
+        function get_dse_deps {
+          package=$1; shift
+          version=$1; shift
+          dependencies=$(apt-cache depends ${package}=${version} | grep 'Depends: dse' | awk '{ print $2 }')
+          echo "${package}"
+          for dependency in ${dependencies}; do
+            get_dse_deps ${dependency} ${version};
+          done
+        }
+    
+        get_dse_deps "${dse_package}" "${dse_version}" | sort | uniq | sed "s/$/=${dse_version}/" | xargs apt-get install -y
+      EOF
+      only_if { node[:cassandra][:package_name] == 'dse' }
     end
     apt_preference "#{node.cassandra.package_name}" do
       pin "version #{node.cassandra.version}"
