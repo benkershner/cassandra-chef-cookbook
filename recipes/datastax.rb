@@ -88,10 +88,12 @@ when "debian"
     end
   end
 
-  # This is necessary because apt gets very confused by the fact that the
-  # latest package available for cassandra is 2.x while you're trying to
-  # install dsc12 which requests 1.2.x.
-  if node[:cassandra][:package_name] == 'dse' then
+  # If you're installing the Enterprise package (as opposed to Community
+  # edition), and it's not the latest version, you have to install the proper
+  # version of each dependency. This Bash script recursively grabs all of the
+  # dependencies and installs them in one fell swoop.
+  if node[:cassandra][:package_name] == 'dse-full' then
+    node.normal.cassandra.conf_dir = '/etc/dse/cassandra'
     bash "dse-package-install" do
       command <<-EOF
         dse_package=#{node[:cassandra][:package_name]}
