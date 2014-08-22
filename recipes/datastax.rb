@@ -106,7 +106,8 @@ when "debian"
         function get_dse_deps {
           package=$1; shift
           version=$1; shift
-          dependencies=$(apt-cache depends ${package}=${version} | grep 'Depends: dse' | awk '{ print $2 }')
+          # Get the dependencies. Ignore non-zero return codes.
+          dependencies=$(apt-cache depends ${package}=${version} | grep 'Depends: dse' | awk '{ print $2 }' || true)
           echo "${package}"
           for dependency in ${dependencies}; do
             get_dse_deps ${dependency} ${version};
