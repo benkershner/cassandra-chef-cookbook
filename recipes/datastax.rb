@@ -92,7 +92,7 @@ when "debian"
   # edition), and it's not the latest version, you have to install the proper
   # version of each dependency. This Bash script recursively grabs all of the
   # dependencies and installs them in one fell swoop.
-  if node[:cassandra][:package_name] == 'dse-full' then
+  if node[:cassandra][:package_name] == 'dse-full'
     node.normal.cassandra.conf_dir = '/etc/dse/cassandra'
     bash "dse-package-install" do
       command <<-EOF
