@@ -96,6 +96,11 @@ when "debian"
     node.normal.cassandra.conf_dir = '/etc/dse/cassandra'
     bash "dse-package-install" do
       command <<-EOF
+        set -o nounset
+        set -o errexit
+        set -o pipefail
+
+        touch /tmp/foo
         dse_package=#{node[:cassandra][:package_name]}
         dse_version=#{node[:cassandra][:version]}
     
