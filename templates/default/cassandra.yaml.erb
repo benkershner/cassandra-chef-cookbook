@@ -47,7 +47,6 @@ initial_token:
 initial_token: <%= node[:cassandra][:initial_token] %>
 <% end %>
 
-<% if not node[:cassandra][:version].start_with?('3.0') %>
 # See http://wiki.apache.org/cassandra/HintedHandoff
 hinted_handoff_enabled: <%= cassandra_bool_config(node[:cassandra][:hinted_handoff_enabled]) %>
 <% end %>
@@ -55,9 +54,9 @@ hinted_handoff_enabled: <%= cassandra_bool_config(node[:cassandra][:hinted_hando
 # generated.  After it has been dead this long, new hints for it will not be
 # created until it has been seen alive and gone down again.
 max_hint_window_in_ms: <%= node[:cassandra][:max_hint_window_in_ms] %>
+<% if not node[:cassandra][:version].start_with?('3.0') %>
 # throttle in KB's per second, per delivery thread
 hinted_handoff_throttle_in_kb: <%= node[:cassandra][:hinted_handoff_throttle_in_kb] %>
-<% if not node[:cassandra][:version].start_with?('3.0') %>
 # Number of threads with which to deliver hints;
 # Consider increasing this number when you have multi-dc deployments, since
 # cross-dc handoff tends to be slower
