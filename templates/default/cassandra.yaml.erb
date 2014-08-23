@@ -49,7 +49,6 @@ initial_token: <%= node[:cassandra][:initial_token] %>
 
 # See http://wiki.apache.org/cassandra/HintedHandoff
 hinted_handoff_enabled: <%= cassandra_bool_config(node[:cassandra][:hinted_handoff_enabled]) %>
-<% end %>
 # this defines the maximum amount of time a dead host will have hints
 # generated.  After it has been dead this long, new hints for it will not be
 # created until it has been seen alive and gone down again.
