@@ -47,18 +47,22 @@ initial_token:
 initial_token: <%= node[:cassandra][:initial_token] %>
 <% end %>
 
+<% if not node[:cassandra][:version].start_with?('3.0') %>
 # See http://wiki.apache.org/cassandra/HintedHandoff
 hinted_handoff_enabled: <%= cassandra_bool_config(node[:cassandra][:hinted_handoff_enabled]) %>
+<% end %>
 # this defines the maximum amount of time a dead host will have hints
 # generated.  After it has been dead this long, new hints for it will not be
 # created until it has been seen alive and gone down again.
 max_hint_window_in_ms: <%= node[:cassandra][:max_hint_window_in_ms] %>
 # throttle in KB's per second, per delivery thread
 hinted_handoff_throttle_in_kb: <%= node[:cassandra][:hinted_handoff_throttle_in_kb] %>
+<% if not node[:cassandra][:version].start_with?('3.0') %>
 # Number of threads with which to deliver hints;
 # Consider increasing this number when you have multi-dc deployments, since
 # cross-dc handoff tends to be slower
 max_hints_delivery_threads: <%= node[:cassandra][:max_hints_delivery_threads] %>
+<% end %>
 
 # The following setting populates the page cache on memtable flush and compaction
 # WARNING: Enable this setting only when the whole node's data fits in memory.
@@ -120,6 +124,7 @@ data_file_directories:
 # commit log
 commitlog_directory: <%= node.cassandra.commitlog_dir %>
 
+<% if not node[:cassandra][:version].start_with?('3.0') %>
 # policy for data disk failures:
 # stop: shut down gossip and Thrift, leaving the node effectively dead, but
 #       still inspectable via JMX.
@@ -128,6 +133,7 @@ commitlog_directory: <%= node.cassandra.commitlog_dir %>
 #              data at CL.ONE!
 # ignore: ignore fatal errors and let requests fail, as in pre-1.2 Cassandra
 disk_failure_policy: <%= node[:cassandra][:disk_failure_policy] %>
+<% end %>
 
 # Maximum size of the key cache in memory.
 #
@@ -337,6 +343,7 @@ listen_address: <%= node[:cassandra][:listen_address] %>
 # Leaving this blank will set it to the same value as listen_address
 broadcast_address: <%= node[:cassandra][:broadcast_address] %>
 
+<% if not node[:cassandra][:version].start_with?('3.0') %>
 # Whether to start the native transport server.
 # Currently, only the thrift server is started by default because the native
 # transport is considered beta.
@@ -351,10 +358,13 @@ native_transport_port: <%= node[:cassandra][:native_transport_port] %>
 # are the ones below:
 # native_transport_min_threads: 16
 # native_transport_max_threads: 128
+<% end %>
 
 
+<% if not node[:cassandra][:version].start_with?('3.0') %>
 # Whether to start the thrift rpc server.
 start_rpc: <%= cassandra_bool_config(node[:cassandra][:start_rpc]) %>
+<% end %>
 # The address to bind the Thrift RPC service to -- clients connect
 # here. Unlike ListenAddress above, you *can* specify 0.0.0.0 here if
 # you want Thrift to listen on all interfaces.
@@ -495,6 +505,7 @@ compaction_preheat_key_cache: <%= cassandra_bool_config(node[:cassandra][:compac
 # When unset, the default is 400 Mbps or 50 MB/s.
 stream_throughput_outbound_megabits_per_sec: <%= node[:cassandra][:stream_throughput_outbound_megabits_per_sec] %>
 
+<% if not node[:cassandra][:version].start_with?('3.0') %>
 # How long the coordinator should wait for read operations to complete
 read_request_timeout_in_ms: <%= node[:cassandra][:read_request_timeout_in_ms] %>
 # How long the coordinator should wait for seq or index scans to complete
@@ -507,7 +518,9 @@ write_request_timeout_in_ms: <%= node[:cassandra][:write_request_timeout_in_ms] 
 truncate_request_timeout_in_ms: <%= node[:cassandra][:truncate_request_timeout_in_ms] %>
 # The default timeout for other, miscellaneous operations
 request_timeout_in_ms: <%= node[:cassandra][:request_timeout_in_ms] %>
+<% end %>
 
+<% if not node[:cassandra][:version].start_with?('3.0') %>
 # Enable operation timeout information exchange between nodes to accurately
 # measure request timeouts, If disabled cassandra will assuming the request
 # was forwarded to the replica instantly by the coordinator
@@ -515,6 +528,7 @@ request_timeout_in_ms: <%= node[:cassandra][:request_timeout_in_ms] %>
 # Warning: before enabling this property make sure to ntp is installed
 # and the times are synchronized between the nodes.
 cross_node_timeout: <%= cassandra_bool_config(node[:cassandra][:cross_node_timeout]) %>
+<% end %>
 
 # Enable socket timeout for streaming operation.
 # When a timeout occurs during streaming, streaming is retried from the start
@@ -646,6 +660,7 @@ request_scheduler: <%= node[:cassandra][:request_scheduler] %>
 # often lower memory usage without a impact on performance.
 index_interval: <%= node[:cassandra][:index_interval] %>
 
+<% if not node[:cassandra][:version].start_with?('3.0') %>
 # Enable or disable inter-node encryption
 # Default settings are TLS v1, RSA 1024-bit keys (it is imperative that
 # users generate their own keys) TLS_RSA_WITH_AES_128_CBC_SHA as the cipher
@@ -713,12 +728,15 @@ client_encryption_options:
 #          dc   - traffic between different datacenters is compressed
 #          none - nothing is compressed.
 internode_compression: <%= node[:cassandra][:internode_compression] %>
+<% end %>
 
+<% if not node[:cassandra][:version].start_with?('3.0') %>
 # Enable or disable tcp_nodelay for inter-dc communication.
 # Disabling it will result in larger (but fewer) network packets being sent,
 # reducing overhead from the TCP protocol itself, at the cost of increasing
 # latency if you block for cross-datacenter responses.
 inter_dc_tcp_nodelay: true
+<% end %>
 
 <% if node[:cassandra][:auto_bootstrap] == false %>
 auto_bootstrap: false
