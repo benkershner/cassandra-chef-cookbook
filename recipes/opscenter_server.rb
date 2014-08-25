@@ -56,8 +56,10 @@ when "rhel"
     action :create
   end
 end
+
 package "#{node[:cassandra][:opscenter][:server][:package_name]}" do
   action :install
+  version node.cassandra.opscenter.server.version
 end
 
 service "opscenterd" do
