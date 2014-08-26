@@ -173,5 +173,6 @@ default[:cassandra][:opscenter][:agent] = {
   :server_host => nil, # if nil, will use search to get IP by server role
   :server_role => "opscenter_server",
   :use_ssl => true,
-  :version => nil
+  :version => nil,
+  :from_server => false
 }

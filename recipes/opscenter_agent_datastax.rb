@@ -67,9 +67,22 @@ if !server_ip
   end
 end 
 
-package "#{node[:cassandra][:opscenter][:agent][:package_name]}" do
-  action :install
-  version node.cassandra.opscenter.agent.version
+if node.cassandra.opscenter.agent.from_server
+  server_ip = nil
+  if not Chef::Config.solo
+    search(:node, "role:cassandra AND chef_environment:#{node.chef_environment}").each do |n|
+      server_ip = n[:ec2][:local_ipv4]
+      break
+    end
+  end
+  remote_file "/tmp/opscenter-agent.deb" do
+    source "http://#{server_ip}/opscenter-agent.deb"
+  end
+else
+  package "#{node[:cassandra][:opscenter][:agent][:package_name]}" do
+    action :install
+    version node.cassandra.opscenter.agent.version
+  end
 end
 
 service "datastax-agent" do
