@@ -165,6 +165,7 @@ default[:cassandra][:opscenter][:server] = {
 
 default[:cassandra][:opscenter][:agent] = {
   :package_name => "datastax-agent",
+  :service_name => "datastax-agent",
   :download_url => nil,
   :checksum => nil,
   :install_dir => "/opt",

@@ -89,7 +89,7 @@ else
   end
 end
 
-service "datastax-agent" do
+service node.cassandra.opscenter.agent.service_name do
   supports :restart => true, :status => true
   action [:enable, :start]
 end
