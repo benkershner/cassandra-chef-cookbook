@@ -113,8 +113,8 @@ when "debian"
             get_dse_deps ${dependency} ${version};
           done
         }
-    
-        get_dse_deps "${dse_package}" "${dse_version}" | sort | uniq | sed "s/$/=${dse_version}/" | xargs apt-get install -y
+        export DEBIAN_FRONTEND=noninteractive
+        get_dse_deps "${dse_package}" "${dse_version}" | sort | uniq | sed "s/$/=${dse_version}/" | xargs apt-get --force-yes install -y
       EOF
       not_if ("dpkg -s #{node.cassandra.package_name} | grep '^Version: #{node.cassandra.version}'")
 
