@@ -69,6 +69,7 @@ end
 
 package "#{node[:cassandra][:opscenter][:agent][:package_name]}" do
   action :install
+  version node.cassandra.opscenter.agent.version
 end
 
 service "datastax-agent" do
