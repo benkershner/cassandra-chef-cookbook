@@ -76,7 +76,7 @@ if node.cassandra.opscenter.agent.from_server
     end
   end
   deb_file = "#{node.cassandra.opscenter.agent.package_name}.deb"
-  remote_file "/tmp/#{deb_file}"
+  remote_file "/tmp/#{deb_file}" do
     source "http://#{server_ip}/opscenter-agent/#{deb_file}"
   end
   dpkg_package node.cassandra.opscenter.agent.package_name do
