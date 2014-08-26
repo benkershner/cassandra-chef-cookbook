@@ -76,7 +76,7 @@ if node.cassandra.opscenter.agent.from_server
     end
   end
   remote_file "/tmp/opscenter-agent.deb" do
-    source "http://#{server_ip}/opscenter-agent.deb"
+    source "http://#{server_ip}/opscenter-agent/opscenter-agent.deb"
   end
 else
   package "#{node[:cassandra][:opscenter][:agent][:package_name]}" do
