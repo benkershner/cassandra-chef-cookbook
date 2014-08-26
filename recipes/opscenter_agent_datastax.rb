@@ -75,15 +75,16 @@ if node.cassandra.opscenter.agent.from_server
       break
     end
   end
-  remote_file "/tmp/opscenter-agent.deb" do
-    source "http://#{server_ip}/opscenter-agent/opscenter-agent.deb"
+  deb_file = "#{node.cassandra.opscenter.agent.package_name}.deb"
+  remote_file "/tmp/#{deb_file}"
+    source "http://#{server_ip}/opscenter-agent/#{deb_file}"
   end
-  dpkg_package "opscenter-agent" do
-    source "/tmp/opscenter-agent.deb"
+  dpkg_package node.cassandra.opscenter.agent.package_name do
+    source "/tmp/#{deb_file}"
     action :install
   end
 else
-  package "#{node[:cassandra][:opscenter][:agent][:package_name]}" do
+  package node.cassandra.opscenter.agent.package_name do
     action :install
     version node.cassandra.opscenter.agent.version
   end
@@ -95,11 +96,11 @@ service node.cassandra.opscenter.agent.service_name do
 end
 
 
-template "/etc/datastax-agent/address.yaml" do
+template "/etc/#{node.cassandra.opscenter.agent.package_name}/address.yaml" do
   mode 0644
   source "opscenter-agent.conf.erb"
   variables({
     :server_ip => server_ip
   })
-  notifies :restart, "service[datastax-agent]"
+  notifies :restart, "service[#{node.cassandra.opscenter.agent.service_name}]"
 end
