@@ -70,13 +70,17 @@ end
 if node.cassandra.opscenter.agent.from_server
   server_ip = nil
   if not Chef::Config.solo
-    search(:node, "role:cassandra AND chef_environment:#{node.chef_environment}").each do |n|
+    search(:node, "role:opscenter AND chef_environment:#{node.chef_environment}").each do |n|
       server_ip = n[:ec2][:local_ipv4]
       break
     end
   end
   remote_file "/tmp/opscenter-agent.deb" do
     source "http://#{server_ip}/opscenter-agent/opscenter-agent.deb"
+  end
+  dpkg_package "opscenter-agent" do
+    source "/tmp/opscenter-agent.deb"
+    action :install
   end
 else
   package "#{node[:cassandra][:opscenter][:agent][:package_name]}" do
