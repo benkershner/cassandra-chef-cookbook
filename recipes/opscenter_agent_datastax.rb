@@ -67,14 +67,9 @@ if !server_ip
   end
 end 
 
+address_file = "/etc/#{node.cassandra.opscenter.agent.package_name}/address.yaml"
+
 if node.cassandra.opscenter.agent.from_server
-  server_ip = nil
-  if not Chef::Config.solo
-    search(:node, "role:opscenter AND chef_environment:#{node.chef_environment}").each do |n|
-      server_ip = n[:ec2][:local_ipv4]
-      break
-    end
-  end
   deb_file = "#{node.cassandra.opscenter.agent.package_name}.deb"
   remote_file "/tmp/#{deb_file}" do
     source "http://#{server_ip}/opscenter-agent/#{deb_file}"
@@ -82,6 +77,28 @@ if node.cassandra.opscenter.agent.from_server
   dpkg_package node.cassandra.opscenter.agent.package_name do
     source "/tmp/#{deb_file}"
     action :install
+  end
+  file "/tmp/#{deb_file}" do
+    action :delete
+  end
+  ['conf', 'ssl'].each do |dir|
+    directory "/var/lib/#{node.cassandra.opscenter.agent.package_name}/#{dir}" do
+      owner "opscenter-agent"
+      group "opscenter-agent"
+      mode 00644
+      action :create
+    end
+  end
+  remote_file "/tmp/#{deb_file}" do
+    source "http://#{server_ip}/opscenter-agent/#{deb_file}"
+  end
+  address_file = "/var/lib/#{node.cassandra.opscenter.agent.package_name}/conf/address.yaml"
+  dpkg_package node.cassandra.opscenter.agent.package_name do
+    source "/tmp/#{deb_file}"
+    action :install
+  end
+  remote_file "/var/lib/#{node.cassandra.opscenter.agent.package_name}/ssl/agentKeyStore" do
+    source "http://#{server_ip}/opscenter-agent/ssl/agentKeyStore"
   end
 else
   package node.cassandra.opscenter.agent.package_name do
@@ -95,8 +112,7 @@ service node.cassandra.opscenter.agent.service_name do
   action [:enable, :start]
 end
 
-
-template "/etc/#{node.cassandra.opscenter.agent.package_name}/address.yaml" do
+template "#{address_file}" do
   mode 0644
   source "opscenter-agent.conf.erb"
   variables({
