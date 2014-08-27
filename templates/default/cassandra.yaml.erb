@@ -92,6 +92,17 @@ authorizer: <%= node[:cassandra][:authorizer] %>
 # Will be disabled automatically for AllowAllAuthorizer.
 permissions_validity_in_ms: <%= node[:cassandra][:permissions_validity_in_ms] %>
 
+<% if node[:cassandra][:version].start_with?('3.0') %>
+# Replication strategy to use for the auth keyspace.
+# Following an upgrade from DSE 3.0 to 3.1, this should be removed
+auth_replication_strategy: org.apache.cassandra.locator.SimpleStrategy
+
+# Replication options to use for the auth keyspace.
+# Following an upgrade from DSE 3.0 to 3.1, this should be removed
+auth_replication_options:
+    replication_factor: 1
+
+<% end %>
 # The partitioner is responsible for distributing rows (by key) across
 # nodes in the cluster.  Any IPartitioner may be used, including your
 # own as long as it is on the classpath.  Out of the box, Cassandra
@@ -245,6 +256,33 @@ seed_provider:
           # Ex: "<ip1>,<ip2>,<ip3>"
           #- seeds: "127.0.0.1"
           - seeds: "<%= if node[:cassandra][:seeds].kind_of?(Array) then node[:cassandra][:seeds].join(",") else node[:cassandra][:seeds] end %>"
+
+<% if node[:cassandra][:version].start_with?('3.0') %>
+# emergency pressure valve: each time heap usage after a full (CMS)
+# garbage collection is above this fraction of the max, Cassandra will
+# flush the largest memtables.
+#
+# Set to 1.0 to disable.  Setting this lower than
+# CMSInitiatingOccupancyFraction is not likely to be useful.
+#
+# RELYING ON THIS AS YOUR PRIMARY TUNING MECHANISM WILL WORK POORLY:
+# it is most effective under light to moderate load, or read-heavy
+# workloads; under truly massive write load, it will often be too
+# little, too late.
+flush_largest_memtables_at: 0.75
+
+# emergency pressure valve #2: the first time heap usage after a full
+# (CMS) garbage collection is above this fraction of the max,
+# Cassandra will reduce cache maximum _capacity_ to the given fraction
+# of the current _size_.  Should usually be set substantially above
+# flush_largest_memtables_at, since that will have less long-term
+# impact on the system.
+#
+# Set to 1.0 to disable.  Setting this lower than
+# CMSInitiatingOccupancyFraction is not likely to be useful.
+reduce_cache_sizes_at: 0.85
+reduce_cache_capacity_to: 0.6
+<% end %>
 
 # emergency pressure valve: each time heap usage after a full (CMS)
 # garbage collection is above this fraction of the max, Cassandra will
