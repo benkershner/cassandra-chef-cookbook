@@ -175,5 +175,7 @@ default[:cassandra][:opscenter][:agent] = {
   :server_role => "opscenter_server",
   :use_ssl => true,
   :version => nil,
-  :from_server => false
+  :from_server => false,
+  :owner => "root",
+  :group => "root"
 }

@@ -83,9 +83,9 @@ if node.cassandra.opscenter.agent.from_server
   end
   ['conf', 'ssl'].each do |dir|
     directory "/var/lib/#{node.cassandra.opscenter.agent.package_name}/#{dir}" do
-      owner "opscenter-agent"
-      group "opscenter-agent"
-      mode 00644
+      owner node.cassandra.opscenter.agent.owner
+      group node.cassandra.opscenter.agent.group
+      mode 0644
       action :create
     end
   end
@@ -114,6 +114,8 @@ end
 
 template "#{address_file}" do
   mode 0644
+  owner node.cassandra.opscenter.agent.owner
+  group node.cassandra.opscenter.agent.group
   source "opscenter-agent.conf.erb"
   variables({
     :server_ip => server_ip
