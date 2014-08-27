@@ -85,7 +85,7 @@ if node.cassandra.opscenter.agent.from_server
     directory "/var/lib/#{node.cassandra.opscenter.agent.package_name}/#{dir}" do
       owner node.cassandra.opscenter.agent.owner
       group node.cassandra.opscenter.agent.group
-      mode 0644
+      mode 0755
       action :create
     end
   end
