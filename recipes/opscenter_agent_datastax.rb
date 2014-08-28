@@ -68,7 +68,7 @@ if !server_ip
 end 
 
 package_name = node.cassandra.opscenter.agent.package_name
-address_file = "/etc/#{package_name}/address.yaml"
+address_file = "/var/lib/#{package_name}/conf/address.yaml"
 
 if node.cassandra.opscenter.agent.from_server
   deb_file = "#{package_name}.deb"
