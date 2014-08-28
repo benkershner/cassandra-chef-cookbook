@@ -67,22 +67,22 @@ if !server_ip
   end
 end 
 
-address_file = "/etc/#{node.cassandra.opscenter.agent.package_name}/address.yaml"
+package_name = node.cassandra.opscenter.agent.package_name
+address_file = "/etc/#{package_name}/address.yaml"
 
 if node.cassandra.opscenter.agent.from_server
-  deb_file = "#{node.cassandra.opscenter.agent.package_name}.deb"
+  deb_file = "#{package_name}.deb"
   remote_file "/tmp/#{deb_file}" do
     source "http://#{server_ip}/opscenter-agent/#{deb_file}"
+    notifies :install, "dpkg_package[#{package_name}]", :immediately
   end
-  dpkg_package node.cassandra.opscenter.agent.package_name do
+  dpkg_package package_name do
     source "/tmp/#{deb_file}"
-    action :install
-  end
-  file "/tmp/#{deb_file}" do
-    action :delete
+    action :nothing
+    not_if "dpkg -s opscenter-agent | grep \"^Version: $(dpkg-deb -W '/tmp/#{deb_file}' | grep '#{node.cassandra.opscenter.agent.version}')\""
   end
   ['conf', 'ssl'].each do |dir|
-    directory "/var/lib/#{node.cassandra.opscenter.agent.package_name}/#{dir}" do
+    directory "/var/lib/#{package_name}/#{dir}" do
       owner node.cassandra.opscenter.agent.owner
       group node.cassandra.opscenter.agent.group
       mode 0755
