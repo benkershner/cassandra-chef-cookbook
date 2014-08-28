@@ -89,14 +89,6 @@ if node.cassandra.opscenter.agent.from_server
       action :create
     end
   end
-  remote_file "/tmp/#{deb_file}" do
-    source "http://#{server_ip}/opscenter-agent/#{deb_file}"
-  end
-  address_file = "/var/lib/#{node.cassandra.opscenter.agent.package_name}/conf/address.yaml"
-  dpkg_package node.cassandra.opscenter.agent.package_name do
-    source "/tmp/#{deb_file}"
-    action :install
-  end
   remote_file "/var/lib/#{node.cassandra.opscenter.agent.package_name}/ssl/agentKeyStore" do
     source "http://#{server_ip}/opscenter-agent/ssl/agentKeyStore"
   end
