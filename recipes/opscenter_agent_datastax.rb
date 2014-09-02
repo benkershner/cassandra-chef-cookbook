@@ -114,3 +114,14 @@ template "#{address_file}" do
   })
   notifies :restart, "service[#{node.cassandra.opscenter.agent.service_name}]"
 end
+
+if node.cassandra.snitch_conf
+  template File.join(node.cassandra.conf_dir, "cassandra-topology.properties") do
+    source    "cassandra-topology.properties.erb"
+    owner     node.cassandra.user
+    group     node.cassandra.group
+    mode      0644
+    variables ({ :snitch => node.cassandra.snitch_conf })
+    notifies :restart, "service[#{node.cassandra.opscenter.agent.service_name}]", :delayed if node.cassandra.notify_restart
+  end
+end
